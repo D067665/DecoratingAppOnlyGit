@@ -12,6 +12,12 @@
 		2375127021C23C0F0048DDCC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2375126E21C23C0F0048DDCC /* Main.storyboard */; };
 		2375127221C23C0F0048DDCC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2375127121C23C0F0048DDCC /* Assets.xcassets */; };
 		2375127521C23C0F0048DDCC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2375127321C23C0F0048DDCC /* LaunchScreen.storyboard */; };
+		2375127D21C23E8F0048DDCC /* FocalNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2375127C21C23E8F0048DDCC /* FocalNode.swift */; };
+		2375128221C241630048DDCC /* CowboyBoots_BaseColor.png in Resources */ = {isa = PBXBuildFile; fileRef = 2375127F21C241630048DDCC /* CowboyBoots_BaseColor.png */; };
+		2375128321C241630048DDCC /* CowboyBoots.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 2375128021C241630048DDCC /* CowboyBoots.mtl */; };
+		2375128421C241630048DDCC /* CowboyBoots.scn in Resources */ = {isa = PBXBuildFile; fileRef = 2375128121C241630048DDCC /* CowboyBoots.scn */; };
+		237512AB21C293A40048DDCC /* Vase.scn in Resources */ = {isa = PBXBuildFile; fileRef = 237512AA21C293A40048DDCC /* Vase.scn */; };
+		237512AD21C293AD0048DDCC /* VaseTexture.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 237512AC21C293AD0048DDCC /* VaseTexture.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +28,12 @@
 		2375127121C23C0F0048DDCC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2375127421C23C0F0048DDCC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2375127621C23C0F0048DDCC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2375127C21C23E8F0048DDCC /* FocalNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocalNode.swift; sourceTree = "<group>"; };
+		2375127F21C241630048DDCC /* CowboyBoots_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CowboyBoots_BaseColor.png; sourceTree = "<group>"; };
+		2375128021C241630048DDCC /* CowboyBoots.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CowboyBoots.mtl; sourceTree = "<group>"; };
+		2375128121C241630048DDCC /* CowboyBoots.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = CowboyBoots.scn; sourceTree = "<group>"; };
+		237512AA21C293A40048DDCC /* Vase.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = Vase.scn; sourceTree = "<group>"; };
+		237512AC21C293AD0048DDCC /* VaseTexture.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = VaseTexture.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,14 +66,28 @@
 		2375126921C23C0F0048DDCC /* DecoratingAppOnly */ = {
 			isa = PBXGroup;
 			children = (
+				2375127E21C241630048DDCC /* Models */,
 				2375126A21C23C0F0048DDCC /* AppDelegate.swift */,
 				2375126C21C23C0F0048DDCC /* ViewController.swift */,
 				2375126E21C23C0F0048DDCC /* Main.storyboard */,
+				2375127C21C23E8F0048DDCC /* FocalNode.swift */,
 				2375127121C23C0F0048DDCC /* Assets.xcassets */,
 				2375127321C23C0F0048DDCC /* LaunchScreen.storyboard */,
 				2375127621C23C0F0048DDCC /* Info.plist */,
 			);
 			path = DecoratingAppOnly;
+			sourceTree = "<group>";
+		};
+		2375127E21C241630048DDCC /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				2375127F21C241630048DDCC /* CowboyBoots_BaseColor.png */,
+				2375128021C241630048DDCC /* CowboyBoots.mtl */,
+				2375128121C241630048DDCC /* CowboyBoots.scn */,
+				237512AA21C293A40048DDCC /* Vase.scn */,
+				237512AC21C293AD0048DDCC /* VaseTexture.jpg */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -123,8 +149,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				2375127521C23C0F0048DDCC /* LaunchScreen.storyboard in Resources */,
+				2375128421C241630048DDCC /* CowboyBoots.scn in Resources */,
+				237512AB21C293A40048DDCC /* Vase.scn in Resources */,
 				2375127221C23C0F0048DDCC /* Assets.xcassets in Resources */,
 				2375127021C23C0F0048DDCC /* Main.storyboard in Resources */,
+				2375128321C241630048DDCC /* CowboyBoots.mtl in Resources */,
+				237512AD21C293AD0048DDCC /* VaseTexture.jpg in Resources */,
+				2375128221C241630048DDCC /* CowboyBoots_BaseColor.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -136,6 +167,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2375126D21C23C0F0048DDCC /* ViewController.swift in Sources */,
+				2375127D21C23E8F0048DDCC /* FocalNode.swift in Sources */,
 				2375126B21C23C0F0048DDCC /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -283,12 +315,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2XMNB3L8C3;
 				INFOPLIST_FILE = DecoratingAppOnly/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "Schmidt--Denise.DecoratingAppOnly";
+				PRODUCT_BUNDLE_IDENTIFIER = "-com.sap.ARKitDemo2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -300,12 +333,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2XMNB3L8C3;
 				INFOPLIST_FILE = DecoratingAppOnly/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "Schmidt--Denise.DecoratingAppOnly";
+				PRODUCT_BUNDLE_IDENTIFIER = "-com.sap.ARKitDemo2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
