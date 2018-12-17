@@ -21,7 +21,7 @@ class ViewController: UIViewController {
     private var screenCenter: CGPoint!
     private var selectedNode: SCNNode?
     private var originalRotation: SCNVector3?
-    let modelArray = ["CowboyBoots","Vase"]
+    let modelArray = ["CowboyBootsSaveLoad","Vase"]
     var modelName = "CowboyBoots"
     var worldMapURL: URL = {
         do {
