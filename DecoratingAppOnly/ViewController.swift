@@ -258,9 +258,13 @@ class ViewController: UIViewController {
         
         //4. If The Gesture State Has Ended Remove The Reference To The Current Node
         if gesture.state == .ended{
+            selectedNode.anch
             selectedNode = nil
+            //adOrUpdateAnchor
         }
     }
+    
+    
     
     func getParent(_ nodeFound: SCNNode?) -> SCNNode? {
         if let node = nodeFound {
@@ -334,6 +338,9 @@ class ViewController: UIViewController {
             }
         }
     }
+    
+    
+   
     
     
     
