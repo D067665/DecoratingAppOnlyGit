@@ -13,7 +13,8 @@ import SceneKit
 class ViewController: UIViewController {
 
     @IBOutlet weak var sceneView: ARSCNView!
-    @IBOutlet weak var searchingLabel: UILabel!
+    
+    @IBOutlet weak var label: UILabel!
     @IBOutlet weak var addModel: UIButton!
     private var modelNode: SCNNode!
     var focalNode: FocalNode?
@@ -22,6 +23,15 @@ class ViewController: UIViewController {
     private var originalRotation: SCNVector3?
     let modelArray = ["CowboyBoots","Vase"]
     var modelName = "CowboyBoots"
+    var worldMapURL: URL = {
+        do {
+            return try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+                .appendingPathComponent("worldMapURL")
+        } catch {
+            fatalError("Error getting world map URL from document directory.")
+        }
+    }()
+    
     
     let session = ARSession()
     let sessionConfiguration: ARWorldTrackingConfiguration = {
@@ -45,29 +55,13 @@ class ViewController: UIViewController {
         
         // Update at 60 frames per second (recommended by Apple)
         sceneView.preferredFramesPerSecond = 60
+        sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
         
-          // Get the scene the model is stored in
-       /* let modelScene = SCNScene(named: "CowboyBoots.scn")!
         
-        // Get the model from the root node of the scene
-        modelNode = modelScene.rootNode
-        
-        // Scale down the model to fit the real world better
-        modelNode.scale = SCNVector3(0.1, 0.1, 0.1)
-        
-        // Rotate the model 90 degrees so it sits even to the floor
-        //modelNode.transform = SCNMatrix4Rotate(modelNode.transform, Float.pi / 2.0, 1.0, 0.0, 0.0)*/
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapped))
         
         sceneView.addGestureRecognizer(tapGesture)
-        
-        /*let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(didDoubleTapScreen))
-        doubleTapGesture.numberOfTapsRequired = 2
-        doubleTapGesture.numberOfTouchesRequired = 1
-        sceneView.addGestureRecognizer(doubleTapGesture)*/
-        
-        
         // Tracks pans on the screen
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(moveNode(_:)))
         sceneView.addGestureRecognizer(panGesture)
@@ -81,13 +75,14 @@ class ViewController: UIViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        session.run(sessionConfiguration)
         
         // Make sure that ARKit is supported
-        if ARWorldTrackingConfiguration.isSupported {
+        /*if ARWorldTrackingConfiguration.isSupported {
             session.run(sessionConfiguration, options: [.removeExistingAnchors, .resetTracking])
         } else {
             print("Sorry, your device doesn't support ARKit")
-        }
+        }*/
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -114,22 +109,7 @@ class ViewController: UIViewController {
     }
     
     @objc func removeNode(gesture: UILongPressGestureRecognizer){
-       /* if( sender.state != .began){
-            return
-        }
-        let sceneView = sender.view as! ARSCNView
-        let location = sender.location(in: sceneView)
-        
-        var hitTestOptions = [SCNHitTestOption: Any]()
-        hitTestOptions[SCNHitTestOption.boundingBoxOnly] = true
-        let hitResults: [SCNHitTestResult]  =
-            sceneView.hitTest(location, options: hitTestOptions)
-        if let hit = hitResults.first {
-            if let node = getParent(hit.node) {
-                node.removeFromParentNode()
-                return
-            }
-        }*/
+       
         //1. Get The Current Touch Point
         let currentTouchPoint = gesture.location(in: sceneView)
         
@@ -155,21 +135,6 @@ class ViewController: UIViewController {
         
         
     }
-    /*@objc func didDoubleTapScreen(sender: UITapGestureRecognizer){
-        let sceneView = sender.view as! ARSCNView
-        let location = sender.location(in: sceneView)
-        
-        var hitTestOptions = [SCNHitTestOption: Any]()
-        hitTestOptions[SCNHitTestOption.boundingBoxOnly] = true
-        let hitResults: [SCNHitTestResult]  =
-            sceneView.hitTest(location, options: hitTestOptions)
-        if let hit = hitResults.first {
-            if let node = getParent(hit.node) {
-                node.removeFromParentNode()
-                return
-            }
-        }
-    }*/
     
     func addModel(hitTestResult:ARHitTestResult){
         
@@ -186,7 +151,7 @@ class ViewController: UIViewController {
         self.sceneView.scene.rootNode.addChildNode(node)
     }
     @IBAction func addModelButtonTapped(_ sender: UIButton) {
-        let alertController = UIAlertController(title: "Select Model", message: "", preferredStyle: .actionSheet)
+        let alertController = UIAlertController(title: "Select ModelGit", message: "", preferredStyle: .actionSheet)
         alertController.popoverPresentationController?.sourceView = sender
         for modelName in modelArray{
             let alertAction = UIAlertAction(title: modelName, style: .default){[weak self] (_) in self?.modelName = modelName
@@ -196,37 +161,7 @@ class ViewController: UIViewController {
         present(alertController, animated: true, completion: nil)
     }
     
-   /* @objc private func viewTapped(_ gesture: UITapGestureRecognizer) {
-        // Make sure we've found the floor
-        guard focalNode != nil else { return }
-        
-        // See if we tapped on a plane where a model can be placed
-        let results = sceneView.hitTest(screenCenter, types: .existingPlane)
-        guard let transform = results.first?.worldTransform else { return }
-        
-        // Find the position to place the model
-        let position = float3(transform.columns.3.x, transform.columns.3.y, transform.columns.3.z)
-        
-        /*// Create a copy of the model set its position/rotation
-        // Get the scene the model is stored in
-        let newScene = SCNScene(named: "CowboyBoots.scn")!
-        
-        // Get the model from the root node of the scene
-        let newNode = newScene.rootNode
-        
-        // Scale down the model to fit the real world better
-        newNode.scale = SCNVector3(0.1, 0.1, 0.1)*/
-        
-        // Rotate the model 90 degrees so it sits even to the floor
-        
-        let newNode = modelNode.flattenedClone()
-        newNode.simdPosition = position
-        
-        // Add the model to the scene
-        sceneView.scene.rootNode.addChildNode(newNode)
-        
-        //node.append(newNode)
-    }*/
+   
     
     private func node(at position: CGPoint) -> SCNNode? {
         return sceneView.hitTest(position, options: nil)
@@ -243,28 +178,9 @@ class ViewController: UIViewController {
                 node?.eulerAngles = SCNVector3(CGFloat((node?.eulerAngles.x)!),gesture.rotation,CGFloat((node?.eulerAngles.z)!))
             }
         }
-        
-      
-        
-
-    }
+       }
     
-   /* @objc private func viewRotated(_ gesture: UIRotationGestureRecognizer) {
-        let location = gesture.location(in: sceneView)
-        
-        guard let node = node(at: location) else { return }
-        
-        switch gesture.state {
-        case .began:
-            originalRotation = node.eulerAngles
-        case .changed:
-            guard var originalRotation = originalRotation else { return }
-            originalRotation.y -= Float(gesture.rotation)
-            node.eulerAngles = originalRotation
-        default:
-            originalRotation = nil
-        }
-    }*/
+   
     
     @objc func moveNode(_ gesture: UIPanGestureRecognizer) {
         
@@ -307,20 +223,7 @@ class ViewController: UIViewController {
             selectedNode = nil
         }
     }
-    /*override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let location = touches.first!.location(in: sceneView)
-        var hitTestOptions = [SCNHitTestOption: Any]()
-        hitTestOptions[SCNHitTestOption.boundingBoxOnly] = true
-        let hitResults: [SCNHitTestResult]  =
-            sceneView.hitTest(location, options: hitTestOptions)
-        if let hit = hitResults.first {
-            if let node = getParent(hit.node) {
-                node.removeFromParentNode()
-                return
-            }
-        }
-        
-    }*/
+    
     func getParent(_ nodeFound: SCNNode?) -> SCNNode? {
         if let node = nodeFound {
             if node.name == modelName {
@@ -332,52 +235,136 @@ class ViewController: UIViewController {
         return nil
     }
     
+    func archive(worldMap: ARWorldMap) throws {
+        let data = try NSKeyedArchiver.archivedData(withRootObject: worldMap, requiringSecureCoding: true)
+        try data.write(to: self.worldMapURL, options: [.atomic])
+    }
+    func retrieveWorldMapData(from url: URL) -> Data? {
+        do {
+            return try Data(contentsOf: self.worldMapURL)
+        } catch {
+            self.label.text = "Error retrieving world map data."
+            return nil
+        }
+    }
+    
+    func unarchive(worldMapData data: Data) -> ARWorldMap? {
+        guard let unarchievedObject = try? NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: data),
+            let worldMap = unarchievedObject else { return nil }
+        return worldMap
+    }
+    
+    func resetTrackingConfiguration(with worldMap: ARWorldMap? = nil) {
+        let configuration = ARWorldTrackingConfiguration()
+        configuration.planeDetection = [.horizontal]
+        
+        let options: ARSession.RunOptions = [.resetTracking, .removeExistingAnchors]
+        if let worldMap = worldMap {
+            configuration.initialWorldMap = worldMap
+            self.label.text = "Found saved world map."
+        } else {
+            self.label.text = "Move camera around to map your surrounding space."
+        }
+        
+        sceneView.debugOptions = [.showFeaturePoints]
+        sceneView.session.run(configuration, options: options)
+    }
+    
+    
+    
+    @IBAction func loadBarButtonPressed(_ sender: UIBarButtonItem) {
+        guard let worldMapData = retrieveWorldMapData(from: worldMapURL),
+            let worldMap = unarchive(worldMapData: worldMapData) else { return }
+        resetTrackingConfiguration(with: worldMap)
+    }
+    
+    
+    @IBAction func saveBarButtonPressed(_ sender: UIBarButtonItem) {
+        
+        sceneView.session.getCurrentWorldMap { (worldMap, error) in
+            guard let worldMap = worldMap else {
+                return self.label.text =  "Error getting current world map."
+            }
+            
+            do {
+                try self.archive(worldMap: worldMap)
+                DispatchQueue.main.async {
+                    self.label.text = "World map is saved."
+                }
+            } catch {
+                fatalError("Error saving world map: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    
     
     
 }
+extension UIColor {
+    open class var transparentLightBlue: UIColor {
+        return UIColor(red: 90/255, green: 200/255, blue: 250/255, alpha: 0.50)
+    }
+}
+
 extension ViewController: ARSCNViewDelegate {
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
+        // 1 unwrap anchor
+        guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
+        
+        // 2 visualize anchor
+        let width = CGFloat(planeAnchor.extent.x)
+        let height = CGFloat(planeAnchor.extent.z)
+        let plane = SCNPlane(width: width, height: height)
+        
+        // 3
+        plane.materials.first?.diffuse.contents = UIColor.transparentLightBlue
+        
+        // 4
+        let planeNode = SCNNode(geometry: plane)
+        
+        // 5
+        let x = CGFloat(planeAnchor.center.x)
+        let y = CGFloat(planeAnchor.center.y)
+        let z = CGFloat(planeAnchor.center.z)
+        planeNode.position = SCNVector3(x,y,z)
+        planeNode.eulerAngles.x = -.pi / 2
+        
+        // 6
+        node.addChildNode(planeNode)
+        
         
         // If we have already created the focal node we should not do it again
         guard focalNode == nil else { return }
         
-        // Create a new focal node
-        //let node = FocalNode()
-       //node.addChildNode(modelNode)
         
-        // Add it to the root of our current scene
-        //sceneView.scene.rootNode.addChildNode(node)
-        
-        // Store the focal node
-        //self.focalNode = node
-        
-        
-        
-        /*
-        // Hide the label (making sure we're on the main thread)
-        DispatchQueue.main.async {
-            UIView.animate(withDuration: 0.5, animations: {
-                self.searchingLabel.alpha = 0.0
-            }, completion: { _ in
-                self.searchingLabel.isHidden = true
-            })
-        }*/
  
  
     }
     
-    func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-        // If we haven't established a focal node yet do not update
-        guard let focalNode = focalNode else { return }
+    
+    
+    func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
         
-        // Determine if we hit a plane in the scene
-        let hit = sceneView.hitTest(screenCenter, types: .existingPlane)
+        // 1 unwrap anchor
+        guard let planeAnchor = anchor as?  ARPlaneAnchor,
+            //unwrap node
+            let planeNode = node.childNodes.first,
+            let plane = planeNode.geometry as? SCNPlane
+            else { return }
         
-        // Find the position of the first plane we hit
-        guard let positionColumn = hit.first?.worldTransform.columns.3 else { return }
+        // 2 update planes width & height
+        let width = CGFloat(planeAnchor.extent.x)
+        let height = CGFloat(planeAnchor.extent.z)
+        plane.width = width
+        plane.height = height
         
-        // Update the position of the node
-        focalNode.position = SCNVector3(x: positionColumn.x, y: positionColumn.y, z: positionColumn.z)
+        // 3 update position
+        let x = CGFloat(planeAnchor.center.x)
+        let y = CGFloat(planeAnchor.center.y)
+        let z = CGFloat(planeAnchor.center.z)
+        planeNode.position = SCNVector3(x, y, z)
+        
     }
 }
 
