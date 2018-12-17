@@ -16,12 +16,13 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var label: UILabel!
     @IBOutlet weak var addModel: UIButton!
-    private var modelNode: SCNNode!
+    private var modelNode: SCNReferenceNode!
     var focalNode: FocalNode?
+    var anchor: ARAnchor?
     private var screenCenter: CGPoint!
     private var selectedNode: SCNNode?
     private var originalRotation: SCNVector3?
-    let modelArray = ["CowboyBootsSaveLoad","Vase"]
+    let modelArray = ["CowboyBoots","Vase"]
     var modelName = "CowboyBoots"
     var worldMapURL: URL = {
         do {
@@ -33,12 +34,12 @@ class ViewController: UIViewController {
     }()
     
     
-    let session = ARSession()
+    /*let session = ARSession()
     let sessionConfiguration: ARWorldTrackingConfiguration = {
         let config = ARWorldTrackingConfiguration()
         config.planeDetection = .horizontal
         return config
-    }()
+    }()*/
     override func viewDidLoad() {
         super.viewDidLoad()
         screenCenter = view.center
@@ -47,7 +48,7 @@ class ViewController: UIViewController {
         sceneView.delegate = self as ARSCNViewDelegate
         
         // Use the session that we created
-        sceneView.session = session
+        //sceneView.session = session
         
         // Use the default lighting so that our objects are illuminated
         sceneView.automaticallyUpdatesLighting = true
@@ -75,7 +76,7 @@ class ViewController: UIViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        session.run(sessionConfiguration)
+        resetTrackingConfiguration()
         
         // Make sure that ARKit is supported
         /*if ARWorldTrackingConfiguration.isSupported {
@@ -87,7 +88,7 @@ class ViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         // Pause ARKit while the view is gone
-        session.pause()
+        sceneView.session.pause()
         
         super.viewWillDisappear(animated)
     }
@@ -97,16 +98,21 @@ class ViewController: UIViewController {
     @objc func tapped(sender: UITapGestureRecognizer){
         let sceneView = sender.view as! ARSCNView
         let tapLocation = sender.location(in: sceneView)
-        
+
         let hitTest = sceneView.hitTest(tapLocation, types: .existingPlaneUsingExtent)
         if !hitTest.isEmpty{
-            print("Touched on the plane")
-            addModel(hitTestResult: hitTest.first!)
+        print("Touched on the plane")
+        let hitTestResult = hitTest.first!
+            anchor = ARAnchor(name: "\(modelName)", transform: hitTestResult.worldTransform)
+            print ("Anchor Name: , \(anchor!.name)" )
+    
+            self.sceneView.session.add(anchor: anchor!)
+           
+        }else{
+            print("Not a plane")}
         }
-        else{
-            print("Not a plane")
-        }
-    }
+       
+
     
     @objc func removeNode(gesture: UILongPressGestureRecognizer){
        
@@ -136,7 +142,8 @@ class ViewController: UIViewController {
         
     }
     
-    func addModel(hitTestResult:ARHitTestResult){
+    
+    /*func addModel(hitTestResult:ARHitTestResult){
         
         guard let scene = SCNScene(named: "\(modelName).scn") else{return}
         
@@ -149,9 +156,40 @@ class ViewController: UIViewController {
         let thirdColumn = transform.columns.3
         node.position = SCNVector3(thirdColumn.x, thirdColumn.y, thirdColumn.z)
         self.sceneView.scene.rootNode.addChildNode(node)
+    }*/
+    
+    func addNode() -> SCNReferenceNode{
+        let sceneURL = Bundle.main.url(forResource: "\(modelName)", withExtension: ".scn")!
+        let node = SCNReferenceNode(url: sceneURL)!
+        if(modelName == "CowboyBoots"){
+            node.scale = SCNVector3(0.1, 0.1, 0.1)
+        }
+        node.load()
+        return node
+        
     }
+    
+    func addBootsNode() -> SCNReferenceNode{
+        let sceneURL = Bundle.main.url(forResource: "CowboyBoots", withExtension: ".scn")!
+        let node = SCNReferenceNode(url: sceneURL)!
+        
+        node.scale = SCNVector3(0.1, 0.1, 0.1)
+        
+        node.load()
+        return node
+        
+    }
+    func addVaseNode() -> SCNReferenceNode{
+        let sceneURL = Bundle.main.url(forResource: "Vase", withExtension: ".scn")!
+        let node = SCNReferenceNode(url: sceneURL)!
+        
+        node.load()
+        return node
+        
+    }
+    
     @IBAction func addModelButtonTapped(_ sender: UIButton) {
-        let alertController = UIAlertController(title: "Select ModelGit", message: "", preferredStyle: .actionSheet)
+        let alertController = UIAlertController(title: "Select Model", message: "", preferredStyle: .actionSheet)
         alertController.popoverPresentationController?.sourceView = sender
         for modelName in modelArray{
             let alertAction = UIAlertAction(title: modelName, style: .default){[weak self] (_) in self?.modelName = modelName
@@ -307,9 +345,31 @@ extension UIColor {
     }
 }
 
+extension float4x4 {
+    var translation: float3 {
+        let translation = self.columns.3
+        return float3(translation.x, translation.y, translation.z)
+    }
+}
+
 extension ViewController: ARSCNViewDelegate {
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-        // 1 unwrap anchor
+        guard !(anchor is ARPlaneAnchor) else { return }
+        if (anchor.name == "Vase"){
+            modelNode = addVaseNode()
+        }
+        if(anchor.name == "CowboyBoots"){
+            modelNode = addBootsNode()
+        }
+        //modelNode = addNode()
+        //modelNode.position = SCNVector3((anchor.transform.translation))
+        //sceneView.scene.rootNode.addChildNode(node)
+        node.addChildNode(modelNode)
+        /*DispatchQueue.main.async {
+            node.addChildNode(modelNode)
+        }*/
+        
+        /*// 1 unwrap anchor
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
         
         // 2 visualize anchor
@@ -335,7 +395,7 @@ extension ViewController: ARSCNViewDelegate {
         
         
         // If we have already created the focal node we should not do it again
-        guard focalNode == nil else { return }
+        guard focalNode == nil else { return }*/
         
         
  
