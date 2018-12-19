@@ -36,7 +36,9 @@ class ViewController: UIViewController {
     let session = ARSession()
     let sessionConfiguration: ARWorldTrackingConfiguration = {
         let config = ARWorldTrackingConfiguration()
-        config.planeDetection = .horizontal
+        //config.planeDetection = .horizontal
+        //object detection
+        config.detectionObjects = ARReferenceObject.referenceObjects(inGroupNamed: "RegalObjekte" , bundle: Bundle.main)!
         return config
     }()
     override func viewDidLoad() {
@@ -45,16 +47,18 @@ class ViewController: UIViewController {
         
         // Report updates to the view controller
         sceneView.delegate = self as ARSCNViewDelegate
+        let scene = SCNScene(named: "GameScene.scn")!
+        sceneView.scene = scene
         
         // Use the session that we created
         sceneView.session = session
         
         // Use the default lighting so that our objects are illuminated
-        sceneView.automaticallyUpdatesLighting = true
-        sceneView.autoenablesDefaultLighting = true
+        //sceneView.automaticallyUpdatesLighting = true
+        //sceneView.autoenablesDefaultLighting = true
         
         // Update at 60 frames per second (recommended by Apple)
-        sceneView.preferredFramesPerSecond = 60
+        //sceneView.preferredFramesPerSecond = 60
         sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
         
         
@@ -308,8 +312,8 @@ extension UIColor {
 }
 
 extension ViewController: ARSCNViewDelegate {
-    func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-        // 1 unwrap anchor
+    //func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
+      /*  // 1 unwrap anchor
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
         
         // 2 visualize anchor
@@ -335,17 +339,40 @@ extension ViewController: ARSCNViewDelegate {
         
         
         // If we have already created the focal node we should not do it again
-        guard focalNode == nil else { return }
+        guard focalNode == nil else { return }*/
         
         
  
  
+    //}
+    func renderer(_renderer: SCNRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
+        //return node when anchor is detected
+        let node = SCNNode()
+        print("Object Detected")
+        
+        if let objectAnchor = anchor as? ARObjectAnchor {
+            let plane = SCNPlane(width: CGFloat(objectAnchor.referenceObject.extent.x * 0.2), height: CGFloat(objectAnchor.referenceObject.extent.y * 0.1))
+            plane.cornerRadius = plane.width / 8
+            
+            let spriteKitScene = SKScene(fileNamed: "ProductInfo")
+            
+            plane.firstMaterial?.diffuse.contents = spriteKitScene
+            plane.firstMaterial?.isDoubleSided = true
+            plane.firstMaterial?.diffuse.contentsTransform = SCNMatrix4Translate(SCNMatrix4MakeScale(1, -1, 1), 0, 1, 0)
+            let planeNode = SCNNode(geometry: plane)
+            planeNode.position = SCNVector3Make(objectAnchor.referenceObject.center.x + 0.20, objectAnchor.referenceObject.center.y, objectAnchor.referenceObject.center.z)
+            node.addChildNode(planeNode)
+        }
+        
+        return node
+        
     }
     
     
     
-    func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
+    //func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
         
+        /*
         // 1 unwrap anchor
         guard let planeAnchor = anchor as?  ARPlaneAnchor,
             //unwrap node
@@ -363,8 +390,8 @@ extension ViewController: ARSCNViewDelegate {
         let x = CGFloat(planeAnchor.center.x)
         let y = CGFloat(planeAnchor.center.y)
         let z = CGFloat(planeAnchor.center.z)
-        planeNode.position = SCNVector3(x, y, z)
+        planeNode.position = SCNVector3(x, y, z)*/
         
-    }
+    //}
 }
 
